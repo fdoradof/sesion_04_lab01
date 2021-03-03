@@ -13,9 +13,16 @@
         name: [httpd, httpd-tools]
         state: latest
     
-    - name: "Habilitar el firewalld"
+    - name: "Habilitar el firewalld servicio http"
       firewalld:
-        service: [http, https]
+        service: http
+        permanent: yes
+        immediate: yes
+        state: enabled
+        
+    - name: "Habilitar el firewalld servicio https"
+      firewalld:                                                                                                                                                                                               
+        service: https
         permanent: yes
         immediate: yes
         state: enabled
@@ -24,7 +31,7 @@
       service:
         name: httpd
         enabled: yes
-        state: restart
+        state: restarted
     
     - name: "Deshabilitar el selinux"
       selinux:
@@ -32,11 +39,20 @@
     
     - name: "Creacion del directorio para el Host Virtual"
       file:
-        path: [/var/www/example.com/html, /var/www/example.com/log]
+        path: /var/www/example.com/html
         owner: root
         group: root
         mode: 0765
         recurse: yes
+        state: directory
+
+    - name: "Creacion del directorio de logs para el Host Virtual"
+      file:                             
+        path: /var/www/example.com/log                                                                                                                                                                        
+        owner: root                     
+        group: root                     
+        mode: 0765                      
+        recurse: yes                    
         state: directory
 
     - name: "Modificar permisos del directorio"
@@ -49,32 +65,41 @@
     - name: "Creacion del index.html"
       file:
         path: /var/www/example.com/html/index.html
+        mode: 0755
         owner: root
         group: root
-        mode: 0755
-        state: file
+        state: touch
     
     - name: "Insercion de contenido en el index.html"
       blockinfile:
-        path: /var/www/example.com/html/index.html
+        path: /var/www/example.com/html/index.html 
         block: |
           <html>
-				      <head>
-					      <title>Welcome to Example.com!</title>
-				      </head>
-				      <body>
-					      <h1>Success! The example.com virtual host is working!</h1>
-				      </body>
-			    </html>
+          <head>
+          <title>Welcome to Example.com!</title>
+          </head>
+          <body>
+          <h1>Success! The example.com virtual host is working!</h1>
+          </body>
+          </html>
     
-    - name: "Creacion del directorio sites"
+    - name: "Creacion del directorio sites-available"
       file:
-        path: [/etc/httpd/sites-available, /etc/httpd/sites-enabled]
+        path: /etc/httpd/sites-available
         owner: root
         group: root
         mode: 0765
         recurse: yes
         state: directory
+
+    - name: "Creacion del directorio sites-available"
+      file:                                                                                                                                                                                                    
+        path: /etc/httpd/sites-enabled
+        owner: root                                 
+        group: root                                 
+        mode: 0765                                  
+        recurse: yes                                
+        state: directory 
     
     - name: "Insertar linea de configuracion"
       lineinfile:
@@ -88,11 +113,11 @@
         owner: root
         group: root
         mode: 0755
-        state: file
+        state: touch
     
     - name: "Insercion de contenido en el index.html"
       blockinfile:
-        path: /var/www/example.com/html/index.html
+        path: /etc/httpd/sites-available/example.com.conf
         block: |
           <VirtualHost *:80>
             ServerName www.example.com
@@ -108,6 +133,7 @@
         dest: /etc/httpd/sites-enabled/example.com.conf
         owner: root
         group: root
+        force: yes
         state: link
     
     - name: "Reinicio del server"
