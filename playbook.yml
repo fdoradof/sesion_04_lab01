@@ -10,12 +10,19 @@
 
     - name: "Instalacion de httpd"
       yum:
-        name: ['httpd', 'httpd-tools']
+        name: [httpd, httpd-tools]
         state: latest
     
-    - name: "Habilitar el firewalld servicio http y https"
+    - name: "Habilitar el firewalld servicio http"
       firewalld:
-        service: ['http', 'https']
+        service: http
+        permanent: yes
+        immediate: yes
+        state: enabled
+        
+    - name: "Habilitar el firewalld servicio https"
+      firewalld:                                                                                                                                                                                               
+        service: https
         permanent: yes
         immediate: yes
         state: enabled
@@ -30,13 +37,22 @@
       selinux:
         state: disabled
     
-    - name: "Creacion del directorios para el Host Virtual"
+    - name: "Creacion del directorio para el Host Virtual"
       file:
-        path: ['/var/www/example.com/html', '/var/www/example.com/log']
+        path: /var/www/example.com/html
         owner: root
         group: root
         mode: 0765
         recurse: yes
+        state: directory
+
+    - name: "Creacion del directorio de logs para el Host Virtual"
+      file:                             
+        path: /var/www/example.com/log                                                                                                                                                                        
+        owner: root                     
+        group: root                     
+        mode: 0765                      
+        recurse: yes                    
         state: directory
 
     - name: "Modificar permisos del directorio"
@@ -48,7 +64,7 @@
 
     - name: "Creacion del index.html"
       file:
-        path: ['/var/www/example.com/html/index.html', '/etc/httpd/sites-available/example.com.conf']
+        path: /var/www/example.com/html/index.html
         mode: 0755
         owner: root
         group: root
@@ -67,21 +83,38 @@
           </body>
           </html>
     
-    - name: "Creacion del directorio sites"
+    - name: "Creacion del directorio sites-available"
       file:
-        path: ['/etc/httpd/sites-available', '/etc/httpd/sites-enabled']
+        path: /etc/httpd/sites-available
         owner: root
         group: root
         mode: 0765
         recurse: yes
         state: directory
+
+    - name: "Creacion del directorio sites-available"
+      file:                                                                                                                                                                                                    
+        path: /etc/httpd/sites-enabled
+        owner: root                                 
+        group: root                                 
+        mode: 0765                                  
+        recurse: yes                                
+        state: directory 
     
     - name: "Insertar linea de configuracion"
       lineinfile:
         path: /etc/httpd/conf/httpd.conf
         line: "IncludeOptional sites-enabled/*.conf"
         create: yes
-
+    
+    - name: "Crear el fichero de configuracion para el Host Virtual"
+      file:
+        path: /etc/httpd/sites-available/example.com.conf
+        owner: root
+        group: root
+        mode: 0755
+        state: touch
+    
     - name: "Insercion de contenido en el index.html"
       blockinfile:
         path: /etc/httpd/sites-available/example.com.conf
@@ -105,4 +138,4 @@
     
     - name: "Reinicio del server"
       reboot:
- ...
+...
