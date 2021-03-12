@@ -10,8 +10,11 @@
 
     - name: "Instalacion de httpd"
       yum:
-        name: [httpd, httpd-tools]
+        name: "{{ items }}"
         state: latest
+      loop: 
+        - httpd
+        - httpd-tools
     
     - name: "Habilitar el firewalld servicio http"
       firewalld:
@@ -36,6 +39,8 @@
     - name: "Deshabilitar el selinux"
       selinux:
         state: disabled
+
+### Es obligatorio el reinicio de la maquina
     
     - name: "Creacion del directorio para el Host Virtual"
       file:
