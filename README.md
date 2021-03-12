@@ -8,7 +8,7 @@ Laboratorio Playbooks
 - Crearemos en ansible.cfg y el inventario
 - Crearemos un playbook con las siguientes datos:
 	- El titulo del Playbook sera "Instalacion y configuracion de serivdor Web"
-	- Atacaremos al nodo 1
+	- Atacaremos al nodo_01
 	- Mostraremos un mensaje por pantalla con el siguiente bloque de texto
 		--> En este ejericicio practicaremos el desarrollo de un playbook desde 0
 			para ello, realizaremos varias tareas para levantar un servidor apache

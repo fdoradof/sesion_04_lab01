@@ -1,6 +1,6 @@
 ---
 - name: "Instalacion y configuracion de serivdor Web"
-  hosts: 192.168.0.14
+  hosts: nodo_01
   tasks:
     - name: "Descripcion del ejercicio"
       debug:
